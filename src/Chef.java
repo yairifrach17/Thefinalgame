@@ -10,61 +10,56 @@ public class Chef {
     private int speed;
     private int width, height;
     private BufferedImage image;
-    private int screenWidth; // גבול המסך לעדכון תנועה
+    private int screenWidth;
 
     public Chef(int startX, int startY, int screenWidth) {
         this.x = startX;
         this.y = startY;
         this.screenWidth = screenWidth;
-        this.speed = 10; // מהירות התזוזה בפיקסלים
+        this.speed = 15; // מהירות תנועה חלקה
 
-        // טעינת תמונת השף
+        // הגדרת גודל רצוי קטן ומתאים למשחק (80 על 80 פיקסלים)
+        this.width = 80;
+        this.height = 80;
+
         try {
-            // ודא שהתמונה נמצאת בתיקיית assets/ או src/ בהתאם למבנה הפרויקט שלך
-            this.image = ImageIO.read(new File("assets/chef.png"));
-            this.width = image.getWidth();
-            this.height = image.getHeight();
+            // טעינת התמונה המקורית
+            BufferedImage originalImage = ImageIO.read(new File("chef.png"));
+
+            // יצירת תמונה חדשה מוקטנת בדיוק לגודל שקבענו (width, height)
+            this.image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            Graphics g = this.image.createGraphics();
+            g.drawImage(originalImage, 0, 0, width, height, null);
+            g.dispose();
+
         } catch (IOException e) {
-            System.err.println("שגיאה בטעינת תמונת השף! נטען גודל ברירת מחדל.");
-            e.printStackTrace();
-            // ערכי ברירת מחדל במקרה שהתמונה לא נמצאה (כדי שהמשחק לא יקרוס)
-            this.width = 64;
-            this.height = 64;
+            System.err.println("קובץ chef.png לא נמצא בתיקייה הראשית. נטען מלבן גיבוי.");
+            this.image = null; // מוודא שאם יש שגיאה נצייר מלבן גיבוי בגודל החדש
         }
     }
 
-    // תזוזה שמאלה - חסימה שלא ייצא מאפס
     public void moveLeft() {
         x -= speed;
-        if (x < 0) {
-            x = 0;
-        }
+        if (x < 0) x = 0;
     }
 
-    // תזוזה ימינה - חסימה שלא ייצא מרוחב המסך פחות רוחב השחקן
     public void moveRight() {
         x += speed;
-        if (x + width > screenWidth) {
-            x = screenWidth - width;
-        }
+        if (x + width > screenWidth) x = screenWidth - width;
     }
 
-    // מתודת הציור - נקראת מתוך ה-paintComponent של ה-JPanel
     public void draw(Graphics g) {
         if (image != null) {
             g.drawImage(image, x, y, null);
         } else {
-            // גיבוי ויזואלי למקרה שהתמונה לא נטענה
+            // גיבוי צבעוני (למשל אדום) כדי שתראה אותו בבירור אם התמונה לא נטענת
+            g.setColor(java.awt.Color.RED);
             g.fillRect(x, y, width, height);
         }
     }
 
-    // החזרת מלבן החסימה להתנגשויות
     public Rectangle getBounds() {
+        // מלבן ההתנגשות כעת מתאים בדיוק לגודל הקטן (80x80)
         return new Rectangle(x, y, width, height);
     }
-
-    // גטרים בסיסיים
-    public int getX() { return x; }
-    public int getY() { return y; }
 }
