@@ -24,7 +24,7 @@ public class Chef {
 
         try {
             // טעינת התמונה המקורית
-            BufferedImage originalImage = ImageIO.read(new File("chef.png"));
+            BufferedImage originalImage = ImageIO.read(new File("Rsc/chef.png"));
 
             // יצירת תמונה חדשה מוקטנת בדיוק לגודל שקבענו (width, height)
             this.image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
