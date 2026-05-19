@@ -2,136 +2,129 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
+import java.io.File;
 
-public class GamePanel extends JPanel implements Runnable, KeyListener {
-    private Thread gameThread;
-    private boolean running;
-
-    // ניהול מצב משחק (משתנים של חבר שלך)
-    private int score;
-    private int lives;
-
-    // הגדרות עבור 60 FPS
-    private final int FPS = 60;
-    private final long TARGET_TIME = 1000 / FPS;
+/**
+ * פאנל המשחק הראשי. מנהל את ציור השחקן והתנועה.
+ */
+public class GamePanel extends JPanel implements KeyListener {
 
     private GameFrame gameFrame;
+    private Image playerImage;
+    private int playerSize = 60; // גודל הפוקדור
 
-    // === אובייקטים של המשחק (התוספת שלך) ===
-    private Chef chef;
-    private ArrayList<FallingObject> fallingObjects;
+    // מיקום השחקן (התחלתי - נחשב ב-paintComponent הראשון)
+    private int playerX = -1;
+    private int playerY = -1;
+    private int playerSpeed = 15; // כמה פיקסלים הפוקדור יזוז בכל לחיצה
 
-    public GamePanel(GameFrame gameFrame) {
-        this.gameFrame = gameFrame;
-        this.score = 0;
-        this.lives = 3;
+    // משתני מצב משחק (Getters/Setters למניעת שגיאות ב-CollisionManager)
+    private int score = 0;
+    private int lives = 3;
 
-        // אתחול השף (רוחב מסך 800) ורשימת החפצים
-        this.chef = new Chef(370, 480, 800);
-        this.fallingObjects = new ArrayList<>();
+    public GamePanel(GameFrame frame) {
+        this.gameFrame = frame;
 
-        this.setFocusable(true);
-        this.addKeyListener(this);
-    }
+        // --- שינוי 1: רקע לבן ---
+        this.setBackground(Color.WHITE);
 
-    public void startGame() {
-        if (gameThread == null || !running) {
-            running = true;
-            gameThread = new Thread(this);
-            gameThread.start();
+        // הגדרת פריסה חופשית (null layout) כדי שנוכל למקם את השחקן
+        this.setLayout(null);
+
+        // טעינת תמונת הפוקדור
+        String pokePath = "Rsc/pokeball.png"; // ודא שהנתיב נכון!
+        if (new File(pokePath).exists()) {
+            playerImage = new ImageIcon(pokePath).getImage();
+        } else {
+            System.out.println("שגיאה: תמונת הפוקדור לא נמצאה בנתיב " + pokePath);
         }
+
+        // --- שינוי 2: הסרת כפתור 'דמה פסילה' ---
+        // (השורות שיוצרות את ה-failButton נמחקו)
+
+        // --- הכנה לתנועה: הוספת מאזין למקלדת ---
+        this.addKeyListener(this);
+        this.setFocusable(true); // חובה כדי שהפאנל יקלוט את הלחיצות
     }
 
-    public void stopGame() {
-        running = false;
-        if (gameFrame != null) {
+    // --- Getters & Setters ---
+    public int getScore() { return score; }
+    public void setScore(int score) { this.score = score; repaint(); }
+    public int getLives() { return lives; }
+    public void setLives(int lives) {
+        this.lives = lives;
+        repaint();
+        // בדיקה אם המשחק נגמר
+        if (this.lives <= 0) {
             gameFrame.showGameOverScreen();
         }
-    }
-
-    @Override
-    public void run() {
-        long startTime;
-        long waitTime;
-
-        while (running) {
-            startTime = System.nanoTime();
-
-            update();
-            repaint();
-
-            if (this.lives <= 0) {
-                stopGame();
-            }
-
-            waitTime = TARGET_TIME - ((System.nanoTime() - startTime) / 1000000);
-            if (waitTime > 0) {
-                try {
-                    Thread.sleep(waitTime);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    // === עדכון הלוגיקה וההתנגשויות ===
-    private void update() {
-        // 1. עדכון תנועת החפצים הנופלים
-        for (FallingObject obj : fallingObjects) {
-            obj.update();
-        }
-
-        // 2. קריאה למערכת ההתנגשויות שלך
-        CollisionManager.checkCollisions(chef, fallingObjects, this);
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // ציור הניקוד והחיים של חבר שלך
-        g.setColor(Color.BLACK);
-        g.setFont(new Font("Arial", Font.BOLD, 20));
-        g.drawString("Score: " + score, 20, 30);
-        g.drawString("Lives: " + lives, 20, 60);
-
-        // === ציור הדמויות שלך ===
-        // ציור השף
-        if (chef != null) {
-            chef.draw(g);
+        // אתחול מיקום השחקן בפעם הראשונה בלבד
+        if (playerX == -1 && playerY == -1) {
+            playerX = (getWidth() / 2) - (playerSize / 2); // אמצע אופקי
+            playerY = getHeight() - playerSize - 40;        // תחתית אנכית
         }
 
-        // ציור החפצים הנופלים
-        for (FallingObject obj : fallingObjects) {
-            obj.draw(g);
+        // ציור הפוקדור
+        if (playerImage != null) {
+            g.drawImage(playerImage, playerX, playerY, playerSize, playerSize, this);
+        } else {
+            // גיבוי: עיגול אדום אם התמונה חסרה
+            g.setColor(Color.RED);
+            g.fillOval(playerX, playerY, playerSize, playerSize);
         }
+
+        // ציור הניקוד
+        g.setColor(Color.BLACK); // שינוי לצבע שחור על רקע לבן
+        g.setFont(new Font("Arial", Font.BOLD, 22));
+        g.drawString("Score: " + score + " | Lives: " + lives, 20, 35);
     }
 
-    // --- הגדרות KeyListener המעודכנות לתנועת השף ---
-    @Override
-    public void keyTyped(KeyEvent e) {}
-
+    // --- שינוי 3: מימוש תנועת הפוקדור (KeyListener) ---
     @Override
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
 
-        // חצים או מקשי A/D מזיזים את השף
+        // תנועה למעלה
+        if (keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_W) {
+            playerY -= playerSpeed;
+        }
+        // תנועה למטה
+        if (keyCode == KeyEvent.VK_DOWN || keyCode == KeyEvent.VK_S) {
+            playerY += playerSpeed;
+        }
+        // תנועה שמאלה
         if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_A) {
-            chef.moveLeft();
+            playerX -= playerSpeed;
         }
+        // תנועה ימינה
         if (keyCode == KeyEvent.VK_RIGHT || keyCode == KeyEvent.VK_D) {
-            chef.moveRight();
+            playerX += playerSpeed;
         }
+
+        // --- בדיקת גבולות מסך (Borderless Bounds) ---
+        // מונע מהפוקדור לצאת מהמסך
+        if (playerX < 0) playerX = 0;
+        if (playerY < 0) playerY = 0;
+        if (playerX > getWidth() - playerSize) playerX = getWidth() - playerSize;
+        if (playerY > getHeight() - playerSize) playerY = getHeight() - playerSize;
+
+        // ציור מחדש של המסך כדי להראות את הפוקדור במיקום החדש
+        repaint();
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {
+        // אין צורך למימוש
+    }
 
-    // גטרים וסטטרים פשוטים כדי שתוכל לעדכן את הניקוד והחיים מתוך CollisionManager
-    public int getScore() { return score; }
-    public void setScore(int score) { this.score = score; }
-    public int getLives() { return lives; }
-    public void setLives(int lives) { this.lives = lives; }
+    @Override
+    public void keyReleased(KeyEvent e) {
+        // אין צורך למימוש
+    }
 }

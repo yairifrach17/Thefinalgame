@@ -1,40 +1,37 @@
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import java.awt.CardLayout;
+import javax.swing.*;
+import java.awt.*;
 
 public class GameFrame extends JFrame {
 
     private CardLayout cardLayout;
     private JPanel mainContainer;
-    private GamePanel gamePanel; // רפרנס לפאנל של חבר הצוות
+    private GamePanel gamePanel;
 
     public GameFrame() {
         this.setTitle("בהלה במטבח - Kitchen Panic");
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setResizable(false);
-        this.setSize(800, 600);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // זה מה שמאפשר לאיקס לעבוד!
 
-        // יצירת מנהל התצוגה שיודע לדפדף בין מסכים
+        // יצירת מנהל התצוגה
         cardLayout = new CardLayout();
         mainContainer = new JPanel(cardLayout);
 
-        // יצירת המופעים של כל המסכים
+        // יצירת המסכים (שים לב שעכשיו אנחנו שוב קוראים ל-GamePanel הנפרד)
         MenuPanel menuPanel = new MenuPanel(this);
-        gamePanel = new GamePanel(this); // זה הפאנל שחבר הצוות כתב
+        gamePanel = new GamePanel(this);
         GameOverPanel gameOverPanel = new GameOverPanel(this);
 
-        // הוספת המסכים לקונטיינר הראשי עם "שם" מזהה
+        // הוספה לקונטיינר
         mainContainer.add(menuPanel, "MENU_SCREEN");
         mainContainer.add(gamePanel, "GAME_SCREEN");
         mainContainer.add(gameOverPanel, "GAMEOVER_SCREEN");
 
-        // הוספת הקונטיינר הראשי לחלון
         this.add(mainContainer);
 
-        this.setLocationRelativeTo(null); // מרכוז
+        // פתיחת החלון על כל המסך אבל עם מסגרת (כדי שיהיה איקס!)
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        this.setLocationRelativeTo(null);
         this.setVisible(true);
 
-        // מתחילים תמיד מהתפריט הראשי
         showMenuScreen();
     }
 
@@ -43,18 +40,11 @@ public class GameFrame extends JFrame {
     }
 
     public void startGame() {
-        // 1. העברת התצוגה למסך המשחק
         cardLayout.show(mainContainer, "GAME_SCREEN");
-
-        // 2. מיקוד הפאנל כדי שהמקלדת (KeyListener) תעבוד
         gamePanel.requestFocusInWindow();
-
-        // 3. הפעלת התהליכון (Thread) שחבר הצוות כתב
-        gamePanel.startGame();
     }
 
     public void showGameOverScreen() {
-        // מעבר למסך סיום המשחק במקום רק להדפיס לקונסולה
         cardLayout.show(mainContainer, "GAMEOVER_SCREEN");
     }
 }
