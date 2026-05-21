@@ -1,3 +1,4 @@
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -6,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class ObjectManager {
-    // 1. שינוי ברשימה עצמה
     private final ArrayList<FallingObject1> objectsList;
     private final int panelWidth;
     private final int panelHeight;
@@ -24,11 +24,32 @@ public class ObjectManager {
 
     private void loadImages() {
         try {
-            goodImage = ImageIO.read(new File("assets/good_ingredient.png"));
-            badImage = ImageIO.read(new File("assets/bad_item.png"));
+            BufferedImage origGood = ImageIO.read(new File("assets/good_ingredient.png"));
+            BufferedImage origBad = ImageIO.read(new File("assets/bad_item.png"));
+
+            // ---------------------------------------------------------
+            // פה אתה קובע את הגודל של האובייקטים!
+            // שנה את המספרים פה כדי להגדיל או להקטין את התמונות הנופלות
+            // ---------------------------------------------------------
+            int desiredWidth = 50;  // רוחב בפיקסלים
+            int desiredHeight = 50; // גובה בפיקסלים
+
+            goodImage = resizeImage(origGood, desiredWidth, desiredHeight);
+            badImage = resizeImage(origBad, desiredWidth, desiredHeight);
+
         } catch (IOException e) {
             System.err.println("Error loading images: " + e.getMessage());
         }
+    }
+
+    // פונקציית עזר שמקטינה את התמונה באופן איכותי ברגע הטעינה
+    private BufferedImage resizeImage(BufferedImage original, int width, int height) {
+        if (original == null) return null;
+        BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = resized.createGraphics();
+        g2d.drawImage(original, 0, 0, width, height, null);
+        g2d.dispose();
+        return resized;
     }
 
     public void spawnObject(int currentScore) {
@@ -43,7 +64,6 @@ public class ObjectManager {
         int badItemChance = 15 + Math.min(55, currentScore / 3);
         int chanceResult = random.nextInt(100);
 
-        // 2. שינוי פה ביצירת האובייקט
         FallingObject1 newObject;
         if (chanceResult < badItemChance) {
             newObject = new BadItem(xPos, speed, finalDelay, panelHeight, badImage);
@@ -61,14 +81,12 @@ public class ObjectManager {
 
     public void removeFinishedObjects() {
         synchronized (objectsList) {
-            // כאן הורדתי את המילה FallingObject, ה-Java יודע לזהות לבד את הסוג!
             objectsList.removeIf(obj -> obj.isRunning() == false);
         }
     }
 
     public void stopAllObjects() {
         synchronized (objectsList) {
-            // 3. שינוי כאן בלולאה!
             for (FallingObject1 obj : objectsList) {
                 obj.stopFalling();
             }
@@ -76,7 +94,6 @@ public class ObjectManager {
         }
     }
 
-    // 4. שינוי כאן בפונקציה שמחזירה את הרשימה!
     public ArrayList<FallingObject1> getObjectsList() {
         return objectsList;
     }
