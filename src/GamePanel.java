@@ -12,7 +12,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
     private int playerX = -1;
     private int playerY = -1;
-    private int playerSpeed = 25;
+    private int playerSpeed = 30;
 
     private int score = 0;
     private int lives = 3;
@@ -63,7 +63,21 @@ public class GamePanel extends JPanel implements KeyListener {
                 }
 
                 // 2. ניקוי חפצים שנפלו
-                objectManager.removeFinishedObjects();
+                // 2. קודם בודקים אם פספסנו פריט טוב, ואז מנקים חפצים שנפלו
+                synchronized (objectManager.getObjectsList()) {
+                    for (FallingObject1 obj : objectManager.getObjectsList()) {
+                        // בודקים רק חפצים שכבר סיימו לרוץ (או שנתפסו או שנפלו לרצפה)
+                        if (!obj.isRunning()) {
+                            // אם זה חפץ טוב, וה-Y שלו נמצא ממש למטה (כלומר הוא פגע ברצפה ולא בשחקן)
+                            if (obj instanceof GoodIngredient && obj.getY() >= getHeight() - 150) {
+                                // מורידים חיים כי פספסנו אותו
+                                SwingUtilities.invokeLater(() -> setLives(lives - 1));
+                            }
+                        }
+                    }
+                }
+// עכשיו אפשר למחוק את כולם בבטחה מהרשימה
+                objectManager.removeFinishedObjects();;
 
                 // 3. בדיקת פגיעות בשחקן
                 checkCollisions();
