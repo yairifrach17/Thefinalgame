@@ -1,21 +1,30 @@
 import javax.swing.*;
 import java.awt.*;
+import java.io.File; // 🔴 תוספת: חובה כדי לבדוק אם קובץ התמונה קיים
 
 public class GameOverPanel extends JPanel {
 
-    // התוספת שלנו: משתנה שישמור את הטקסט של הניקוד
     private JLabel scoreLabel;
+    private Image backgroundImage; // 🔴 תוספת 1: משתנה שיחזיק את תמונת הרקע
 
     public GameOverPanel(GameFrame frame) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBackground(new Color(255, 228, 225)); // אדמדם בהיר
+        setBackground(new Color(255, 228, 225)); // רקע גיבוי אדמדם (אם התמונה לא תמצא)
+
+        // 🔴 תוספת 2: טעינת תמונת הרקע מתוך תיקיית Rsc
+        String bgPath = "Rsc/gameover_bg.png";
+        if (new File(bgPath).exists()) {
+            backgroundImage = new ImageIcon(bgPath).getImage();
+            System.out.println("✅ הצלחה: רקע מסך הפסילה נטען!");
+        } else {
+            System.out.println("⚠️ שים לב: gameover_bg.png לא נמצא בתיקיית Rsc (מוצג רקע גיבוי).");
+        }
 
         JLabel title = new JLabel("פסילה!");
         title.setFont(new Font("Arial", Font.BOLD, 54));
         title.setForeground(Color.RED);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // --- הוספנו את עיצוב הניקוד ---
         scoreLabel = new JLabel("הניקוד שלך: 0");
         scoreLabel.setFont(new Font("Arial", Font.BOLD, 32));
         scoreLabel.setForeground(Color.BLUE);
@@ -25,35 +34,45 @@ public class GameOverPanel extends JPanel {
         menuButton.setFont(new Font("Arial", Font.BOLD, 24));
         menuButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         menuButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        // לחיצה על הכפתור תחזיר אותנו למסך התפריט
         menuButton.addActionListener(e -> frame.showMenuScreen());
 
-        // --- הוספנו את עיצוב כפתור היציאה ---
         JButton quitButton = new JButton("יציאה מהמשחק");
         quitButton.setFont(new Font("Arial", Font.BOLD, 24));
         quitButton.setBackground(Color.RED);
         quitButton.setForeground(Color.WHITE);
         quitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         quitButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        quitButton.addActionListener(e -> System.exit(0)); // סוגר את המשחק לגמרי
+        quitButton.addActionListener(e -> System.exit(0));
 
-        // --- סידור המסך: שמרתי על הרווחים המקוריים שלכם בדיוק! ---
-        add(Box.createVerticalStrut(200)); // הרווח המקורי שלכם
+        // סידור האלמנטים על המסך עם הרווחים המקוריים שלכם בדיוק
+        add(Box.createVerticalStrut(200));
         add(title);
 
-        add(Box.createVerticalStrut(40)); // קצת רווח כדי להכניס את הניקוד מתחת לכותרת
+        add(Box.createVerticalStrut(40));
         add(scoreLabel);
 
-        add(Box.createVerticalStrut(60)); // הרווח המקורי שלכם
+        add(Box.createVerticalStrut(60));
         add(menuButton);
 
-        add(Box.createVerticalStrut(20)); // קצת רווח כדי להכניס את הכפתור החדש
+        add(Box.createVerticalStrut(20));
         add(quitButton);
     }
 
-    // --- הפונקציה שמעדכנת את הטקסט ברגע הפסילה ---
+    // 🔴 תוספת 3: פונקציה שמציירת את תמונת הרקע ופורסת אותה על כל המסך
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        }
+    }
+
+    // פונקציית בדיקת הציון שלכם עם ההודעות הדינמיות
     public void setFinalScore(int score) {
-        scoreLabel.setText("כל הכבוד! הצלחת לצבור: " + score + " נקודות!");
+        if (score < 100) {
+            scoreLabel.setText("חח יאפס... הצלחת לצבור רק " + score + " נקודות!");
+        } else {
+            scoreLabel.setText("כל הכבוד! הצלחת לצבור: " + score + " נקודות!");
+        }
     }
 }
