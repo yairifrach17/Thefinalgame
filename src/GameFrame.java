@@ -9,21 +9,25 @@ public class GameFrame extends JFrame {
 
     public GameFrame() {
         this.setTitle("בהלה במטבח - Kitchen Panic");
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // זה מה שמאפשר לאיקס לעבוד!
 
+        // יצירת מנהל התצוגה
         cardLayout = new CardLayout();
         mainContainer = new JPanel(cardLayout);
 
+        // יצירת המסכים (שים לב שעכשיו אנחנו שוב קוראים ל-GamePanel הנפרד)
         MenuPanel menuPanel = new MenuPanel(this);
         gamePanel = new GamePanel(this);
         GameOverPanel gameOverPanel = new GameOverPanel(this);
 
+        // הוספה לקונטיינר
         mainContainer.add(menuPanel, "MENU_SCREEN");
         mainContainer.add(gamePanel, "GAME_SCREEN");
         mainContainer.add(gameOverPanel, "GAMEOVER_SCREEN");
 
         this.add(mainContainer);
 
+        // פתיחת החלון על כל המסך אבל עם מסגרת (כדי שיהיה איקס!)
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
@@ -37,12 +41,10 @@ public class GameFrame extends JFrame {
 
     public void startGame() {
         cardLayout.show(mainContainer, "GAME_SCREEN");
-        gamePanel.startGameLoop(); // <--- אומרים לפאנל: תתחיל את המשחק!
         gamePanel.requestFocusInWindow();
     }
 
     public void showGameOverScreen() {
-        gamePanel.stopGameLoop(); // <--- עוצרים את החפצים כשנפסלים
         cardLayout.show(mainContainer, "GAMEOVER_SCREEN");
     }
 }
