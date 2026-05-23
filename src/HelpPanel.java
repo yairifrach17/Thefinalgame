@@ -38,10 +38,9 @@ public class HelpPanel extends JPanel {
         textPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // שורות ההוראות המעודכנות
-        addInstructionLine(textPanel, "המטרה: לתפוס כמה שיותר פוקימונים הנופלים מהשמיים");
-        addInstructionLine(textPanel, "זהירות: הימנעו מלהתנגש במכשולים שפוסלים אתכם");
-        addInstructionLine(textPanel, "תנועה: השתמשו בחיצי המקלדת או במקשים W, A, S, D כדי להזיז את הפוקדור");
-        addInstructionLine(textPanel, "יציאה: בכל שלב במשחק, ניתן ללחוץ על מקש ESC כדי לצאת");
+        addInstructionLine(textPanel, "המטרה: לתפוס כמה שיותר פיקאצ'ויים הנופלים מהשמיים");
+        addInstructionLine(textPanel, "זהירות: הימנעו מלהתנגש במייאויים שפוסלים אתכם");
+        addInstructionLine(textPanel, "תנועה: השתמשו בחיצי המקלדת או במקשים A, D כדי להזיז את הפוקדור");
 
         add(textPanel);
 
