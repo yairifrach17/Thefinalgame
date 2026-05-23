@@ -24,8 +24,8 @@ public class ObjectManager {
 
     private void loadImages() {
         try {
-            BufferedImage origGood = ImageIO.read(new File("assets/good_ingredient.png"));
-            BufferedImage origBad = ImageIO.read(new File("assets/bad_item.png"));
+            BufferedImage origGood = ImageIO.read(new File("Rsc/good_ingredient.png"));
+            BufferedImage origBad = ImageIO.read(new File("Rsc/bad_item.png"));
 
             // ---------------------------------------------------------
             // פה אתה קובע את הגודל של האובייקטים!
