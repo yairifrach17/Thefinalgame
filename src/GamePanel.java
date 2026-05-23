@@ -8,6 +8,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
     private GameFrame gameFrame;
     private Image playerImage;
+    private Image backgroundImage; // 🔴 תוספת: משתנה לשמירת תמונת הרקע
     private int playerSize = 100;
 
     private int playerX = -1;
@@ -17,7 +18,6 @@ public class GamePanel extends JPanel implements KeyListener {
     private int score = 0;
     private int lives = 3;
 
-    // --- התוספות שלנו: מנהל החפצים ולולאת המשחק ---
     private ObjectManager objectManager;
     private Thread gameThread;
     private volatile boolean isRunning = false;
@@ -27,22 +27,30 @@ public class GamePanel extends JPanel implements KeyListener {
         this.setBackground(Color.WHITE);
         this.setLayout(null);
 
+        // טעינת תמונת השחקן (פוקדור)
         String pokePath = "Rsc/pokeball.png";
         if (new File(pokePath).exists()) {
             playerImage = new ImageIcon(pokePath).getImage();
         } else {
-            System.out.println("שגיאה: תמונת הפוקדור לא נמצאה בנתיב " + pokePath);
+            System.out.println("שגיאה: תמונת הפוקדור לאמצאה בנתיב " + pokePath);
+        }
+
+        // 🔴 תוספת: טעינת תמונת הרקע מהתיקייה
+        String bgPath = "Rsc/game_bg.png";
+        if (new File(bgPath).exists()) {
+            backgroundImage = new ImageIcon(bgPath).getImage();
+            System.out.println("✅ הצלחה: תמונת הרקע נטענה בהצלחה!");
+        } else {
+            System.out.println("❌ שגיאה: תמונת הרקע game_bg.png לא נמצאה בתיקיית Rsc!");
         }
 
         this.addKeyListener(this);
         this.setFocusable(true);
     }
 
-    // --- הפונקציות שמפעילות ועוצרות את המשחק (נקראות מ-GameFrame) ---
     public void startGameLoop() {
         if (isRunning) return;
 
-        // מכינים את המסך והמנהל
         score = 0;
         lives = 3;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -50,28 +58,23 @@ public class GamePanel extends JPanel implements KeyListener {
 
         isRunning = true;
 
-        // זה ה"דופק" של המשחק! רץ ברקע כל הזמן
+        // וידוא שהפאנל מקבל פוקוס כדי שהמקלדת תגיב ישר
+        this.requestFocusInWindow();
+
         gameThread = new Thread(() -> {
             int spawnTimer = 0;
             while (isRunning) {
                 spawnTimer++;
 
-                // 1. הגרלת חפצים (בערך כל שנייה)
                 if (spawnTimer >= 100) {
                     objectManager.spawnObject(score);
                     spawnTimer = 0;
                 }
 
-                // 2. ניקוי חפצים שנפלו
                 objectManager.removeFinishedObjects();
-
-                // 3. בדיקת פגיעות בשחקן
                 checkCollisions();
-
-                // 4. ציור מחדש של המסך
                 repaint();
 
-                // מנוחה של 16 מילישניות (נותן בערך 60 FPS)
                 try { Thread.sleep(16); } catch (Exception e) {}
             }
         });
@@ -85,9 +88,8 @@ public class GamePanel extends JPanel implements KeyListener {
         }
     }
 
-    // --- בדיקת התנגשויות בין הפוקדור לחפצים ---
     private void checkCollisions() {
-        if (playerX == -1) return; // השחקן עדיין לא צויר
+        if (playerX == -1) return;
 
         Rectangle playerRect = new Rectangle(playerX, playerY, playerSize, playerSize);
 
@@ -95,16 +97,13 @@ public class GamePanel extends JPanel implements KeyListener {
             for (FallingObject1 obj : objectManager.getObjectsList()) {
                 if (!obj.isRunning()) continue;
 
-                // יצירת מלבן פגיעה סביב החפץ שנופל
                 int w = obj.getWidth() > 0 ? obj.getWidth() : 50;
                 int h = obj.getHeight() > 0 ? obj.getHeight() : 50;
                 Rectangle objRect = new Rectangle(obj.getX(), obj.getY(), w, h);
 
-                // האם יש פגיעה?
                 if (playerRect.intersects(objRect)) {
-                    obj.stopFalling(); // מעלים את החפץ
+                    obj.stopFalling();
 
-                    // שינוי ניקוד וחיים חייב לקרות דרך ממשק המשתמש (SwingUtilities)
                     SwingUtilities.invokeLater(() -> {
                         if (obj instanceof BadItem) {
                             setLives(lives - 1);
@@ -132,6 +131,11 @@ public class GamePanel extends JPanel implements KeyListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        // 🔴 תוספת: מציירים את הרקע ראשון (כדי שלא יכסה את השחקן והחפצים)
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        }
+
         if (playerX == -1 && playerY == -1) {
             playerX = (getWidth() / 2) - (playerSize / 2);
             playerY = getHeight() - playerSize - 40;
@@ -144,7 +148,6 @@ public class GamePanel extends JPanel implements KeyListener {
             g.fillOval(playerX, playerY, playerSize, playerSize);
         }
 
-        // --- הוספנו את הציור של החפצים למסך! ---
         if (objectManager != null) {
             synchronized (objectManager.getObjectsList()) {
                 for (FallingObject1 obj : objectManager.getObjectsList()) {
@@ -153,7 +156,8 @@ public class GamePanel extends JPanel implements KeyListener {
             }
         }
 
-        g.setColor(Color.BLACK);
+        // שיניתי את צבע הטקסט לצהוב כדי שיראו אותו טוב על הרקע החדש
+        g.setColor(Color.YELLOW);
         g.setFont(new Font("Arial", Font.BOLD, 22));
         g.drawString("Score: " + score + " | Lives: " + lives, 20, 35);
     }
@@ -161,8 +165,6 @@ public class GamePanel extends JPanel implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
-       // if (keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_W) playerY -= playerSpeed;
-       // if (keyCode == KeyEvent.VK_DOWN || keyCode == KeyEvent.VK_S) playerY += playerSpeed;
         if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_A) playerX -= playerSpeed;
         if (keyCode == KeyEvent.VK_RIGHT || keyCode == KeyEvent.VK_D) playerX += playerSpeed;
 
