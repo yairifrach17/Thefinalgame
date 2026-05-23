@@ -57,8 +57,8 @@ public class ObjectManager {
         int xPos = random.nextInt(Math.max(1, panelWidth - imgWidth));
 
         int speed = 3;
-        int baseDelay = 10;
-        int difficultyDelayReduction = currentScore / 5;
+        int baseDelay = 20;
+        int difficultyDelayReduction = currentScore / 2;
         int finalDelay = Math.max(8, baseDelay - difficultyDelayReduction);
 
         int badItemChance = 15 + Math.min(55, currentScore / 3);

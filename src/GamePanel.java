@@ -8,6 +8,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
     private GameFrame gameFrame;
     private Image playerImage;
+    private Image backgroundImage; // 🔴 תוספת 1: משתנה לשמירת תמונת הרקע
     private int playerSize = 100;
 
     private int playerX = -1;
@@ -34,6 +35,15 @@ public class GamePanel extends JPanel implements KeyListener {
             System.out.println("שגיאה: תמונת הפוקדור לא נמצאה בנתיב " + pokePath);
         }
 
+        // 🔴 תוספת 2: טעינת תמונת הרקע מתיקיית Rsc
+        String bgPath = "Rsc/game_bg.png";
+        if (new File(bgPath).exists()) {
+            backgroundImage = new ImageIcon(bgPath).getImage();
+            System.out.println("✅ הצלחה: תמונת הרקע נטענה בהצלחה!");
+        } else {
+            System.out.println("⚠️ שים לב: תמונת הרקע game_bg.png לא נמצאה בתיקיית Rsc (יוצג רקע לבן).");
+        }
+
         this.addKeyListener(this);
         this.setFocusable(true);
     }
@@ -50,6 +60,9 @@ public class GamePanel extends JPanel implements KeyListener {
 
         isRunning = true;
 
+        // וידוא שהחלון ממוקד על המקלדת ישר כשהמשחק מתחיל
+        this.requestFocusInWindow();
+
         // זה ה"דופק" של המשחק! רץ ברקע כל הזמן
         gameThread = new Thread(() -> {
             int spawnTimer = 0;
@@ -63,6 +76,20 @@ public class GamePanel extends JPanel implements KeyListener {
                 }
 
                 // 2. ניקוי חפצים שנפלו
+                // 2. קודם בודקים אם פספסנו פריט טוב, ואז מנקים חפצים שנפלו
+                synchronized (objectManager.getObjectsList()) {
+                    for (FallingObject1 obj : objectManager.getObjectsList()) {
+                        // בודקים רק חפצים שכבר סיימו לרוץ (או שנתפסו או שנפלו לרצפה)
+                        if (!obj.isRunning()) {
+                            // אם זה חפץ טוב, וה-Y שלו נמצא ממש למטה (כלומר הוא פגע ברצפה ולא בשחקן)
+                            if (obj instanceof GoodIngredient && obj.getY() >= getHeight() - 150) {
+                                // מורידים חיים כי פספסנו אותו
+                                SwingUtilities.invokeLater(() -> setLives(lives - 1));
+                            }
+                        }
+                    }
+                }
+// עכשיו אפשר למחוק את כולם בבטחה מהרשימה
                 objectManager.removeFinishedObjects();
 
                 // 3. בדיקת פגיעות בשחקן
@@ -132,6 +159,11 @@ public class GamePanel extends JPanel implements KeyListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        // 🔴 תוספת 3: מציירים את תמונת הרקע ראשונה כדי שתיפרס על כל המסך מתחת לשאר האלמנטים
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        }
+
         if (playerX == -1 && playerY == -1) {
             playerX = (getWidth() / 2) - (playerSize / 2);
             playerY = getHeight() - playerSize - 40;
@@ -153,7 +185,8 @@ public class GamePanel extends JPanel implements KeyListener {
             }
         }
 
-        g.setColor(Color.BLACK);
+        // 🔴 שינוי קטן: החלפתי את צבע מדד הניקוד לצהוב, כי שחור לא רואים טוב על רוב הרקעים
+        g.setColor(Color.YELLOW);
         g.setFont(new Font("Arial", Font.BOLD, 22));
         g.drawString("Score: " + score + " | Lives: " + lives, 20, 35);
     }
@@ -161,8 +194,8 @@ public class GamePanel extends JPanel implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
-       // if (keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_W) playerY -= playerSpeed;
-       // if (keyCode == KeyEvent.VK_DOWN || keyCode == KeyEvent.VK_S) playerY += playerSpeed;
+        // if (keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_W) playerY -= playerSpeed;
+        // if (keyCode == KeyEvent.VK_DOWN || keyCode == KeyEvent.VK_S) playerY += playerSpeed;
         if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_A) playerX -= playerSpeed;
         if (keyCode == KeyEvent.VK_RIGHT || keyCode == KeyEvent.VK_D) playerX += playerSpeed;
 
