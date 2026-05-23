@@ -78,7 +78,7 @@ public class GamePanel extends JPanel implements KeyListener {
                 // 2. ניקוי חפצים שנפלו
                 // 2. קודם בודקים אם פספסנו פריט טוב, ואז מנקים חפצים שנפלו
                 synchronized (objectManager.getObjectsList()) {
-                    for (FallingObject1 obj : objectManager.getObjectsList()) {
+                    for (FallingObject obj : objectManager.getObjectsList()) {
                         // בודקים רק חפצים שכבר סיימו לרוץ (או שנתפסו או שנפלו לרצפה)
                         if (!obj.isRunning()) {
                             // אם זה חפץ טוב, וה-Y שלו נמצא ממש למטה (כלומר הוא פגע ברצפה ולא בשחקן)
@@ -119,7 +119,7 @@ public class GamePanel extends JPanel implements KeyListener {
         Rectangle playerRect = new Rectangle(playerX, playerY, playerSize, playerSize);
 
         synchronized (objectManager.getObjectsList()) {
-            for (FallingObject1 obj : objectManager.getObjectsList()) {
+            for (FallingObject obj : objectManager.getObjectsList()) {
                 if (!obj.isRunning()) continue;
 
                 // יצירת מלבן פגיעה סביב החפץ שנופל
@@ -179,7 +179,7 @@ public class GamePanel extends JPanel implements KeyListener {
         // --- הוספנו את הציור של החפצים למסך! ---
         if (objectManager != null) {
             synchronized (objectManager.getObjectsList()) {
-                for (FallingObject1 obj : objectManager.getObjectsList()) {
+                for (FallingObject obj : objectManager.getObjectsList()) {
                     obj.draw(g);
                 }
             }

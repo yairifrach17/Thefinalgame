@@ -1,28 +1,55 @@
 import java.awt.Graphics;
-import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 
-public abstract class FallingObject {
+public abstract class FallingObject implements Runnable {
     protected int x, y;
-    protected int width, height;
     protected int speed;
+    protected int delay;
+    protected int panelHeight;
+    protected volatile boolean running;
+    protected BufferedImage image;
 
-    public FallingObject(int x, int y, int width, int height, int speed) {
+    public FallingObject(int x, int speed, int delay, int panelHeight, BufferedImage image) {
         this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+        this.y = -50;
         this.speed = speed;
+        this.delay = delay;
+        this.panelHeight = panelHeight;
+        this.image = image;
+        this.running = true;
     }
 
-    // עדכון המיקום (נפילה למטה)
-    public void update() {
-        y += speed;
+    @Override
+    public void run() {
+        while (running) {
+            this.y += speed;
+
+            if (y > panelHeight) {
+                stopFalling();
+            }
+
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                running = false;
+            }
+        }
     }
 
-    public abstract void draw(Graphics g);
-
-    // החזרת מלבן החסימה להתנגשויות
-    public Rectangle getBounds() {
-        return new Rectangle(x, y, width, height);
+    public void stopFalling() {
+        this.running = false;
     }
+
+    public void draw(Graphics g) {
+        if (running && image != null) {
+            g.drawImage(image, x, y, null);
+        }
+    }
+
+    public int getX() { return x; }
+    public int getY() { return y; }
+    public int getWidth() { return image != null ? image.getWidth() : 0; }
+    public int getHeight() { return image != null ? image.getHeight() : 0; }
+    public boolean isRunning() { return running; }
 }

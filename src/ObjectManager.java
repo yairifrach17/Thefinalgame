@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class ObjectManager {
-    private final ArrayList<FallingObject1> objectsList;
+    private final ArrayList<FallingObject> objectsList;
     private final int panelWidth;
     private final int panelHeight;
     private final Random random;
@@ -64,7 +64,7 @@ public class ObjectManager {
         int badItemChance = 15 + Math.min(55, currentScore / 3);
         int chanceResult = random.nextInt(100);
 
-        FallingObject1 newObject;
+        FallingObject newObject;
         if (chanceResult < badItemChance) {
             newObject = new BadItem(xPos, speed, finalDelay, panelHeight, badImage);
         } else {
@@ -87,14 +87,14 @@ public class ObjectManager {
 
     public void stopAllObjects() {
         synchronized (objectsList) {
-            for (FallingObject1 obj : objectsList) {
+            for (FallingObject obj : objectsList) {
                 obj.stopFalling();
             }
             objectsList.clear();
         }
     }
 
-    public ArrayList<FallingObject1> getObjectsList() {
+    public ArrayList<FallingObject> getObjectsList() {
         return objectsList;
     }
 }
