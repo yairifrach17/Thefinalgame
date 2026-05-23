@@ -82,8 +82,8 @@ public class GamePanel extends JPanel implements KeyListener {
                         // בודקים רק חפצים שכבר סיימו לרוץ (או שנתפסו או שנפלו לרצפה)
                         if (!obj.isRunning()) {
                             // אם זה חפץ טוב, וה-Y שלו נמצא ממש למטה (כלומר הוא פגע ברצפה ולא בשחקן)
-                            if (obj instanceof GoodIngredient && obj.getY() >= getHeight() - 150) {
-                                // מורידים חיים כי פספסנו אותו
+                            if (obj instanceof GoodItem && obj.getY() >= getHeight() - 150) {
+                                obj.stopFalling();
                                 SwingUtilities.invokeLater(() -> setLives(lives - 1));
                             }
                         }
@@ -135,7 +135,7 @@ public class GamePanel extends JPanel implements KeyListener {
                     SwingUtilities.invokeLater(() -> {
                         if (obj instanceof BadItem) {
                             setLives(lives - 1);
-                        } else if (obj instanceof GoodIngredient) {
+                        } else if (obj instanceof GoodItem) {
                             setScore(score + 10);
                         }
                     });

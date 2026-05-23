@@ -1,13 +1,13 @@
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import java.util.ArrayList;
 import java.util.Random;
 
 public class ObjectManager {
-    private final ArrayList<FallingObject> objectsList;
+    private final CopyOnWriteArrayList<FallingObject> objectsList;
     private final int panelWidth;
     private final int panelHeight;
     private final Random random;
@@ -15,7 +15,7 @@ public class ObjectManager {
     private BufferedImage badImage;
 
     public ObjectManager(int panelWidth, int panelHeight) {
-        this.objectsList = new ArrayList<>();
+        this.objectsList = new CopyOnWriteArrayList<>();
         this.panelWidth = panelWidth;
         this.panelHeight = panelHeight;
         this.random = new Random();
@@ -27,12 +27,8 @@ public class ObjectManager {
             BufferedImage origGood = ImageIO.read(new File("Rsc/good_ingredient.png"));
             BufferedImage origBad = ImageIO.read(new File("Rsc/bad_item.png"));
 
-            // ---------------------------------------------------------
-            // פה אתה קובע את הגודל של האובייקטים!
-            // שנה את המספרים פה כדי להגדיל או להקטין את התמונות הנופלות
-            // ---------------------------------------------------------
-            int desiredWidth = 100;  // רוחב בפיקסלים
-            int desiredHeight = 100; // גובה בפיקסלים
+            int desiredWidth = 100;
+            int desiredHeight = 100;
 
             goodImage = resizeImage(origGood, desiredWidth, desiredHeight);
             badImage = resizeImage(origBad, desiredWidth, desiredHeight);
@@ -42,7 +38,6 @@ public class ObjectManager {
         }
     }
 
-    // פונקציית עזר שמקטינה את התמונה באופן איכותי ברגע הטעינה
     private BufferedImage resizeImage(BufferedImage original, int width, int height) {
         if (original == null) return null;
         BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -68,33 +63,27 @@ public class ObjectManager {
         if (chanceResult < badItemChance) {
             newObject = new BadItem(xPos, speed, finalDelay, panelHeight, badImage);
         } else {
-            newObject = new GoodIngredient(xPos, speed, finalDelay, panelHeight, goodImage);
+            newObject = new GoodItem(xPos, speed, finalDelay, panelHeight, goodImage);
         }
 
-        synchronized (objectsList) {
-            objectsList.add(newObject);
-        }
+        objectsList.add(newObject);
 
         Thread objectThread = new Thread(newObject);
         objectThread.start();
     }
 
     public void removeFinishedObjects() {
-        synchronized (objectsList) {
-            objectsList.removeIf(obj -> obj.isRunning() == false);
-        }
+        objectsList.removeIf(obj -> obj.isRunning() == false);
     }
 
     public void stopAllObjects() {
-        synchronized (objectsList) {
-            for (FallingObject obj : objectsList) {
-                obj.stopFalling();
-            }
-            objectsList.clear();
+        for (FallingObject obj : objectsList) {
+            obj.stopFalling();
         }
+        objectsList.clear();
     }
 
-    public ArrayList<FallingObject> getObjectsList() {
+    public CopyOnWriteArrayList<FallingObject> getObjectsList() {
         return objectsList;
     }
 }
