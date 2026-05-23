@@ -6,6 +6,7 @@ public class GameFrame extends JFrame {
     private CardLayout cardLayout;
     private JPanel mainContainer;
     private GamePanel gamePanel;
+    private GameOverPanel gameOverPanel; // <-- שונה למשתנה מחלקה כדי שנוכל להעביר לו את הניקוד
 
     public GameFrame() {
         this.setTitle("PokePanic");
@@ -17,14 +18,14 @@ public class GameFrame extends JFrame {
         // יצירת המסכים
         MenuPanel menuPanel = new MenuPanel(this);
         gamePanel = new GamePanel(this);
-        GameOverPanel gameOverPanel = new GameOverPanel(this);
-        HelpPanel helpPanel = new HelpPanel(this); // <-- שורה חדשה 1
+        gameOverPanel = new GameOverPanel(this); // <-- האתחול משתמש במשתנה של המחלקה למעלה
+        HelpPanel helpPanel = new HelpPanel(this);
 
         // הוספת המסכים למנהל התצוגה
         mainContainer.add(menuPanel, "MENU_SCREEN");
         mainContainer.add(gamePanel, "GAME_SCREEN");
         mainContainer.add(gameOverPanel, "GAMEOVER_SCREEN");
-        mainContainer.add(helpPanel, "HELP_SCREEN"); // <-- שורה חדשה 2
+        mainContainer.add(helpPanel, "HELP_SCREEN");
 
         this.add(mainContainer);
 
@@ -39,21 +40,22 @@ public class GameFrame extends JFrame {
         cardLayout.show(mainContainer, "MENU_SCREEN");
     }
 
-
     public void startGame() {
         cardLayout.show(mainContainer, "GAME_SCREEN");
-        gamePanel.startGameLoop(); // <--- אומרים לפאנל: תתחיל את המשחק!
+        gamePanel.startGameLoop();
         gamePanel.requestFocusInWindow();
     }
 
-    public void showGameOverScreen() {
-        gamePanel.stopGameLoop(); // <--- עוצרים את החפצים כשנפסלים
+    // <-- הפונקציה המעודכנת שמקבלת את הניקוד ומעדכנת את מסך הפסילה
+    public void showGameOverScreen(int score) {
+        if (gamePanel != null) {
+            gamePanel.stopGameLoop();
+        }
+        gameOverPanel.setFinalScore(score); // מעביר את הניקוד שנקלט למסך הפסילה
         cardLayout.show(mainContainer, "GAMEOVER_SCREEN");
     }
 
     public void showHelpScreen() {
         cardLayout.show(mainContainer, "HELP_SCREEN");
     }
-
-    }
-
+}
