@@ -31,8 +31,8 @@ public class ObjectManager {
             // פה אתה קובע את הגודל של האובייקטים!
             // שנה את המספרים פה כדי להגדיל או להקטין את התמונות הנופלות
             // ---------------------------------------------------------
-            int desiredWidth = 50;  // רוחב בפיקסלים
-            int desiredHeight = 50; // גובה בפיקסלים
+            int desiredWidth = 100;  // רוחב בפיקסלים
+            int desiredHeight = 100; // גובה בפיקסלים
 
             goodImage = resizeImage(origGood, desiredWidth, desiredHeight);
             badImage = resizeImage(origBad, desiredWidth, desiredHeight);
@@ -56,8 +56,8 @@ public class ObjectManager {
         int imgWidth = (goodImage != null) ? goodImage.getWidth() : 50;
         int xPos = random.nextInt(Math.max(1, panelWidth - imgWidth));
 
-        int speed = 5;
-        int baseDelay = 30;
+        int speed = 3;
+        int baseDelay = 15;
         int difficultyDelayReduction = currentScore / 5;
         int finalDelay = Math.max(8, baseDelay - difficultyDelayReduction);
 

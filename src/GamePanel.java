@@ -8,11 +8,11 @@ public class GamePanel extends JPanel implements KeyListener {
 
     private GameFrame gameFrame;
     private Image playerImage;
-    private int playerSize = 60;
+    private int playerSize = 100;
 
     private int playerX = -1;
     private int playerY = -1;
-    private int playerSpeed = 15;
+    private int playerSpeed = 25;
 
     private int score = 0;
     private int lives = 3;
@@ -57,7 +57,7 @@ public class GamePanel extends JPanel implements KeyListener {
                 spawnTimer++;
 
                 // 1. הגרלת חפצים (בערך כל שנייה)
-                if (spawnTimer >= 50) {
+                if (spawnTimer >= 100) {
                     objectManager.spawnObject(score);
                     spawnTimer = 0;
                 }
@@ -161,8 +161,8 @@ public class GamePanel extends JPanel implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
-        if (keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_W) playerY -= playerSpeed;
-        if (keyCode == KeyEvent.VK_DOWN || keyCode == KeyEvent.VK_S) playerY += playerSpeed;
+       // if (keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_W) playerY -= playerSpeed;
+       // if (keyCode == KeyEvent.VK_DOWN || keyCode == KeyEvent.VK_S) playerY += playerSpeed;
         if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_A) playerX -= playerSpeed;
         if (keyCode == KeyEvent.VK_RIGHT || keyCode == KeyEvent.VK_D) playerX += playerSpeed;
 
