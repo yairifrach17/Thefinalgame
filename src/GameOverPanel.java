@@ -27,7 +27,7 @@ public class GameOverPanel extends JPanel {
 
         scoreLabel = new JLabel("הניקוד שלך: 0");
         scoreLabel.setFont(new Font("Arial", Font.BOLD, 32));
-        scoreLabel.setForeground(Color.BLUE);
+        scoreLabel.setForeground(Color.CYAN);
         scoreLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JButton menuButton = new JButton("חזור לתפריט הראשי");
@@ -70,7 +70,7 @@ public class GameOverPanel extends JPanel {
     // פונקציית בדיקת הציון שלכם עם ההודעות הדינמיות
     public void setFinalScore(int score) {
         if (score < 100) {
-            scoreLabel.setText("חח יאפס... הצלחת לצבור רק " + score + " נקודות!");
+            scoreLabel.setText("חחח יאפססס הצלחת לצבור רק " + score + " נקודות!");
         } else {
             scoreLabel.setText("כל הכבוד! הצלחת לצבור: " + score + " נקודות!");
         }
