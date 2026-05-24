@@ -101,9 +101,6 @@ public class MenuPanel extends JPanel {
         });
     }
 
-    /**
-     * פונקציה לטעינה והפעלת קובץ האודיו ברקע
-     */
     private void playMusic(String filePath) {
         try {
             File musicFile = new File(filePath);
@@ -111,7 +108,7 @@ public class MenuPanel extends JPanel {
                 AudioInputStream audioInput = AudioSystem.getAudioInputStream(musicFile);
                 musicClip = AudioSystem.getClip();
                 musicClip.open(audioInput);
-                musicClip.loop(Clip.LOOP_CONTINUOUSLY); // הפעלה חוזרת אינסופית
+                musicClip.loop(Clip.LOOP_CONTINUOUSLY);
             } else {
                 System.out.println("התרעה: קובץ הסאונד theme.wav לא נמצא בתיקיית Rsc");
             }
@@ -120,24 +117,17 @@ public class MenuPanel extends JPanel {
         }
     }
 
-    /**
-     * פונקציית עזר לעצירת המוזיקה במעבר למסכים אחרים
-     */
     private void stopMusic() {
         if (musicClip != null && musicClip.isRunning()) {
             musicClip.stop();
         }
     }
 
-    /**
-     * תת-מחלקה פנימית שמייצרת את האפקט המרחף והעדין ללוגו של המשחק
-     */
     private class FloatingTitle extends JLabel {
         private double angle = 0;
 
         public FloatingTitle(ImageIcon icon) {
             super(icon);
-            // טיימר שמריץ עדכון ציור קטן כל 50 מילישניות
             Timer timer = new Timer(50, e -> {
                 angle += 0.12;
                 repaint();
@@ -148,11 +138,10 @@ public class MenuPanel extends JPanel {
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2d = (Graphics2D) g;
-            // חישוב מתמטי בעזרת סינוס כדי ליצור תנועה חלקה למעלה ולמטה
             int yOffset = (int) (Math.sin(angle) * 10);
             g2d.translate(0, yOffset);
             super.paintComponent(g);
-            g2d.translate(0, -yOffset); // איפוס המטריצה לאחר הציור
+            g2d.translate(0, -yOffset);
         }
     }
 }
