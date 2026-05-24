@@ -133,7 +133,7 @@ public class GamePanel extends JPanel implements KeyListener {
         this.lives = lives;
         repaint();
         if (this.lives <= 0) {
-            gameFrame.showGameOverScreen(score); // <-- שונה: עכשיו מעביר את הציון הנוכחי לפריימוס
+            gameFrame.showGameOverScreen(score);
         }
     }
 
@@ -196,7 +196,7 @@ public class GamePanel extends JPanel implements KeyListener {
                 javax.sound.sampled.AudioInputStream audioInput = javax.sound.sampled.AudioSystem.getAudioInputStream(musicFile);
                 gameMusicClip = javax.sound.sampled.AudioSystem.getClip();
                 gameMusicClip.open(audioInput);
-                gameMusicClip.loop(javax.sound.sampled.Clip.LOOP_CONTINUOUSLY); // ניגון אינסופי
+                gameMusicClip.loop(javax.sound.sampled.Clip.LOOP_CONTINUOUSLY);
             } else {
                 System.out.println("⚠️ התרעה: קובץ הסאונד למשחק לא נמצא בנתיב: " + filePath);
             }
@@ -205,7 +205,6 @@ public class GamePanel extends JPanel implements KeyListener {
         }
     }
 
-    // 🎵 פונקציה לעצירת המוזיקה וניקוי המשאבים מהזיכרון
     private void stopGameMusic() {
         if (gameMusicClip != null && gameMusicClip.isRunning()) {
             gameMusicClip.stop();

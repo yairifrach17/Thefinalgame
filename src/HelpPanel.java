@@ -11,7 +11,6 @@ public class HelpPanel extends JPanel {
     public HelpPanel(GameFrame frame) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        // טעינת תמונת הרקע (אותה תמונה מהתפריט הראשי)
         String bgPath = "Rsc/bg.png";
         if (new File(bgPath).exists()) {
             bgImage = new ImageIcon(bgPath).getImage();
@@ -19,25 +18,22 @@ public class HelpPanel extends JPanel {
             setBackground(new Color(240, 248, 255)); // גיבוי תכלת
         }
 
-        add(Box.createVerticalGlue()); // מרכוז אנכית
+        add(Box.createVerticalGlue());
 
-        // כותרת העמוד
         JLabel titleLabel = new JLabel("איך משחקים?");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 48));
         titleLabel.setForeground(new Color(255, 215, 0)); // צבע צהוב פוקימון
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         add(titleLabel);
 
-        add(Box.createVerticalStrut(40)); // רווח
+        add(Box.createVerticalStrut(40));
 
-        // פאנל הטקסט של ההוראות
-// --- פאנל הטקסט של ההוראות (בתוך HelpPanel.java) ---
+
         JPanel textPanel = new JPanel();
         textPanel.setOpaque(false);
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
         textPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // שורות ההוראות המעודכנות
         addInstructionLine(textPanel, "המטרה: לתפוס כמה שיותר פיקאצ'ויים הנופלים מהשמיים");
         addInstructionLine(textPanel, "זהירות: הימנעו מלהתנגש במייאויים שפוסלים אתכם");
         addInstructionLine(textPanel, "תנועה: השתמשו בחיצי המקלדת או במקשים A, D כדי להזיז את הפוקדור");
@@ -46,7 +42,6 @@ public class HelpPanel extends JPanel {
 
         add(Box.createVerticalStrut(50)); // רווח לפני הכפתור
 
-        // כפתור חזור לתפריט
         JButton backButton = new JButton("חזור לתפריט");
         styleButton(backButton);
         backButton.addActionListener(e -> frame.showMenuScreen()); // מחזיר לתפריט הראשי
@@ -55,27 +50,18 @@ public class HelpPanel extends JPanel {
         add(Box.createVerticalGlue());
     }
 
-    /**
-     * פונקציית עזר להוספת שורת טקסט מעוצבת
-     */
-    /**
-     * פונקציית עזר להוספת שורת טקסט מעוצבת בצבע שחור
-     */
     private void addInstructionLine(JPanel panel, String text) {
         JLabel line = new JLabel(text);
         line.setFont(new Font("Arial", Font.BOLD, 22));
 
-        // --- התיקון: שינוי צבע הטקסט לשחור כדי שייראה ברור על הרקע הלבן ---
         line.setForeground(Color.BLACK);
 
         line.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(line);
-        panel.add(Box.createVerticalStrut(15)); // רווח בין השורות
+        panel.add(Box.createVerticalStrut(15));
     }
 
-    /**
-     * פונקציית עזר לעיצוב כפתור החזור (תואם לכפתורי התפריט)
-     */
+
     private void styleButton(JButton btn) {
         btn.setFont(new Font("Arial", Font.BOLD, 24));
         btn.setForeground(Color.WHITE);

@@ -5,11 +5,11 @@ import java.io.File; // 🔴 תוספת: חובה כדי לבדוק אם קוב�
 public class GameOverPanel extends JPanel {
 
     private JLabel scoreLabel;
-    private Image backgroundImage; // 🔴 תוספת 1: משתנה שיחזיק את תמונת הרקע
+    private Image backgroundImage;
 
     public GameOverPanel(GameFrame frame) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBackground(new Color(255, 228, 225)); // רקע גיבוי אדמדם (אם התמונה לא תמצא)
+        setBackground(new Color(255, 228, 225));
 
         // 🔴 תוספת 2: טעינת תמונת הרקע מתוך תיקיית Rsc
         String bgPath = "Rsc/gameover_bg.png";
@@ -44,7 +44,6 @@ public class GameOverPanel extends JPanel {
         quitButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         quitButton.addActionListener(e -> System.exit(0));
 
-        // סידור האלמנטים על המסך עם הרווחים המקוריים שלכם בדיוק
         add(Box.createVerticalStrut(200));
         add(title);
 
@@ -58,7 +57,6 @@ public class GameOverPanel extends JPanel {
         add(quitButton);
     }
 
-    // 🔴 תוספת 3: פונקציה שמציירת את תמונת הרקע ופורסת אותה על כל המסך
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -67,7 +65,6 @@ public class GameOverPanel extends JPanel {
         }
     }
 
-    // פונקציית בדיקת הציון שלכם עם ההודעות הדינמיות
     public void setFinalScore(int score) {
         if (score < 100) {
             scoreLabel.setText("חחח יאפססס הצלחת לצבור רק " + score + " נקודות!");

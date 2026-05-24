@@ -6,7 +6,7 @@ public class GameFrame extends JFrame {
     private CardLayout cardLayout;
     private JPanel mainContainer;
     private GamePanel gamePanel;
-    private GameOverPanel gameOverPanel; // <-- שונה למשתנה מחלקה כדי שנוכל להעביר לו את הניקוד
+    private GameOverPanel gameOverPanel;
 
     public GameFrame() {
         this.setTitle("PokePanic");
@@ -18,7 +18,7 @@ public class GameFrame extends JFrame {
         // יצירת המסכים
         MenuPanel menuPanel = new MenuPanel(this);
         gamePanel = new GamePanel(this);
-        gameOverPanel = new GameOverPanel(this); // <-- האתחול משתמש במשתנה של המחלקה למעלה
+        gameOverPanel = new GameOverPanel(this);
         HelpPanel helpPanel = new HelpPanel(this);
 
         // הוספת המסכים למנהל התצוגה
@@ -46,12 +46,11 @@ public class GameFrame extends JFrame {
         gamePanel.requestFocusInWindow();
     }
 
-    // <-- הפונקציה המעודכנת שמקבלת את הניקוד ומעדכנת את מסך הפסילה
     public void showGameOverScreen(int score) {
         if (gamePanel != null) {
             gamePanel.stopGameLoop();
         }
-        gameOverPanel.setFinalScore(score); // מעביר את הניקוד שנקלט למסך הפסילה
+        gameOverPanel.setFinalScore(score);
         cardLayout.show(mainContainer, "GAMEOVER_SCREEN");
     }
 

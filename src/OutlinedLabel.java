@@ -1,9 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * רכיב JLabel מותאם אישית שמצייר קו מתאר מסביב לאותיות.
- */
 public class OutlinedLabel extends JLabel {
     private Color outlineColor;
     private int outlineSize;
@@ -12,14 +9,13 @@ public class OutlinedLabel extends JLabel {
         super(text);
         this.outlineColor = outlineColor;
         this.outlineSize = outlineSize;
-        setForeground(textColor); // צבע האותיות הפנימי
+        setForeground(textColor);
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();
 
-        // החלקת קצוות (Antialiasing) לטקסט ולמסגרת
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
@@ -34,7 +30,6 @@ public class OutlinedLabel extends JLabel {
 
         int y = (getHeight() - fm.getHeight()) / 2 + fm.getAscent();
 
-        // ציור המסגרת
         g2.setColor(outlineColor);
         for (int i = -outlineSize; i <= outlineSize; i++) {
             for (int j = -outlineSize; j <= outlineSize; j++) {
@@ -44,7 +39,6 @@ public class OutlinedLabel extends JLabel {
             }
         }
 
-        // ציור הטקסט הפנימי
         g2.setColor(getForeground());
         g2.drawString(getText(), x, y);
 
