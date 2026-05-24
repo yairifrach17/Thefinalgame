@@ -17,6 +17,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
     private int score = 0;
     private int lives = 3;
+    private javax.sound.sampled.Clip gameMusicClip;
 
     private ObjectManager objectManager;
     private Thread gameThread;
@@ -55,6 +56,7 @@ public class GamePanel extends JPanel implements KeyListener {
         objectManager = new ObjectManager(screenSize.width, screenSize.height);
 
         isRunning = true;
+        playGameMusic("Rsc/game_theme.wav");
         this.requestFocusInWindow();
 
         gameThread = new Thread(() -> {
@@ -90,6 +92,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
     public void stopGameLoop() {
         isRunning = false;
+        stopGameMusic();
         if (objectManager != null) {
             objectManager.stopAllObjects();
         }
@@ -185,4 +188,28 @@ public class GamePanel extends JPanel implements KeyListener {
     public void keyTyped(KeyEvent e) {}
     @Override
     public void keyReleased(KeyEvent e) {}
+    // 🎵 פונקציה לטעינה והפעלת מוזיקת המשחק בלולאה
+    private void playGameMusic(String filePath) {
+        try {
+            java.io.File musicFile = new java.io.File(filePath);
+            if (musicFile.exists()) {
+                javax.sound.sampled.AudioInputStream audioInput = javax.sound.sampled.AudioSystem.getAudioInputStream(musicFile);
+                gameMusicClip = javax.sound.sampled.AudioSystem.getClip();
+                gameMusicClip.open(audioInput);
+                gameMusicClip.loop(javax.sound.sampled.Clip.LOOP_CONTINUOUSLY); // ניגון אינסופי
+            } else {
+                System.out.println("⚠️ התרעה: קובץ הסאונד למשחק לא נמצא בנתיב: " + filePath);
+            }
+        } catch (Exception e) {
+            System.out.println("שגיאה בטעינת מוזיקת המשחק: " + e.getMessage());
+        }
+    }
+
+    // 🎵 פונקציה לעצירת המוזיקה וניקוי המשאבים מהזיכרון
+    private void stopGameMusic() {
+        if (gameMusicClip != null && gameMusicClip.isRunning()) {
+            gameMusicClip.stop();
+            gameMusicClip.close();
+        }
+    }
 }
